@@ -66,26 +66,84 @@ namespace MarkdownWikier
 			richTextBox1.SelectionFont = new Font(richTextBox1.SelectionFont, FontStyle.Regular);
 			var lines = new List<string>();
 			char prev = '\0';
+			// what state are we formatting text
 			int state = 0;
+			int nextstate = 0;
+			// are we writing text
+			int writing = 1;
 			var str = new List<char>();
-			/*
-			foreach (var c in string.Join('\r\n',linesIn))
+			
+			foreach (var c in string.Join("\r\n",linesIn))
 			{
 				switch (c)
 				{
 					case '*':
-						if (state == 0)
+						if (writing == 1)
 						{
-
+							if (state == 0)
+							{
+								nextstate = 1;
+							}
+							else if (state == 1)
+							{
+								nextstate = 0;
+							}
+							else if (state == 2)
+							{
+								nextstate = 3;
+							}
+							else if (state == 3)
+							{
+								nextstate = 2;
+							}
+							else
+							{
+								throw new NotImplementedException();
+							}
 						}
+						else
+						{
+							if (nextstate == 1)
+							{
+								nextstate = 2;
+							}
+							else if (nextstate == 2)
+							{
+								if (state == 3)
+									nextstate = 1;
+								else
+									nextstate = 0;
+							}
+							else if (nextstate == 3)
+							{
+								nextstate = 1;
+							}
+							else
+							{
+								throw new NotImplementedException();
+							}
+						}
+						writing = 0;
 						break;
 					default:
+						if (state != nextstate)
+						{
+							richTextBox1.AppendText(new string(str.ToArray()));
+							str.Clear();
+							richTextBox1.SelectionFont = new Font(richTextBox1.SelectionFont, 
+								((nextstate == 2 || nextstate == 3) ? FontStyle.Bold : FontStyle.Regular) | 
+								((nextstate == 1 || nextstate == 3) ? FontStyle.Italic : FontStyle.Regular)
+								);
+							state = nextstate;
+						}
+						writing = 1;
 						str.Add(c);
 						break;
 				}
 				prev = c;
-			}*/
-			richTextBox1.Lines = lines.ToArray();
+			}
+			richTextBox1.AppendText(new string(str.ToArray()));
+			//richTextBox1.Lines = lines.ToArray();
 		}
 
 		public void AddTab(MDFile md)
