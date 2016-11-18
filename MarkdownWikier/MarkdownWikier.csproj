@@ -55,6 +55,9 @@
     <Compile Include="MDFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RichTextBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="MarkdownWikier.resx">
       <DependentUpon>MarkdownWikier.cs</DependentUpon>
     </EmbeddedResource>

@@ -16,10 +16,23 @@ namespace MarkdownWikier
 		public HashSet<MDFile> files = new HashSet<MDFile>();
 		public MDFile current = null;
 
-		public MarkdownWikier()
+		public string[] openFiles = null;
+
+		public MarkdownWikier(string[] args = null)
 		{
 			InitializeComponent();
-
+			if (args != null)
+			{
+				List<string> ofiles = new List<string>();
+				foreach (var s in args)
+				{
+					if (File.Exists(s))
+					{
+						ofiles.Add(s);
+					}
+				}
+				openFiles = ofiles.ToArray();
+			}
 		}
 
 		public void AddTab(string name = "new")
@@ -54,16 +67,31 @@ namespace MarkdownWikier
 		{
 			var tab = tabsPages.Controls.Cast<TabPage>().Where(t => t.Tag as MDFile == sender as MDFile).FirstOrDefault();
 			if (tab != null)
-				tab.Text = ((sender as MDFile).name ?? "new") + "*";
+				tab.Text = ((sender as MDFile).name ?? "new") + ((sender as MDFile)?.Changed ?? true ? "*" : "");
 			// add *
 			RenderMD((sender as MDFile).Lines);
 		}
 
 		public void RenderMD(string[] linesIn)
 		{
+			//богатыеइबारत匣1
 			richTextBox1.DeselectAll();
 			richTextBox1.Clear();
 			richTextBox1.SelectionFont = new Font(richTextBox1.SelectionFont, FontStyle.Regular);
+			richTextBox1.LinkClicked += (a, b) => {
+				Console.WriteLine(a);
+			};
+			
+			//okay so "a ** b * c ** d", should have "b * c" in bold, and a/d regular
+			//[link](anything:really/)
+			//[invalid] (http://www.google.com  ) but format the legit link
+			//"   CODEBLOCK"
+			//## HEAD
+			//* list instead
+			//*notlist
+			//  * list level 2?
+			//    * list level n
+
 			var lines = new List<string>();
 			char prev = '\0';
 			// what state are we formatting text
@@ -72,11 +100,34 @@ namespace MarkdownWikier
 			// are we writing text
 			int writing = 1;
 			var str = new List<char>();
+
+			var dКнñигиℳↈﬖשּאﮋﺸﺱﷺ = 3;
 			
 			foreach (var c in string.Join("\r\n",linesIn))
 			{
 				switch (c)
 				{
+					case '[':
+						break;
+					case ']':
+						break;
+					case '(':
+						if (prev == ']')
+						{
+
+						}
+						else
+						{
+							str.Add(c);
+						}
+						break;
+					case ')':
+						//var pos = richTextBox1.SelectionStart;
+						//richTextBox1.SelectedRtf = @"{\rtf1\ansi " + new string(str.ToArray()) + @"\v #www.topkek.com\v0}";
+						//richTextBox1.Select(pos, str.Count + "www.topkek.com".Length + 1);
+						richTextBox1.InsertLink(new string(str.ToArray()), "www.google.com");
+						str.Clear();
+						break;
 					case '*':
 						if (writing == 1)
 						{
@@ -103,23 +154,36 @@ namespace MarkdownWikier
 						}
 						else
 						{
-							if (nextstate == 1)
+							if (nextstate == 0)
+							{
+								str.Add(prev);
+								str.Add(c);
+								nextstate = state;
+							}
+							else if (nextstate == 1)
 							{
 								nextstate = 2;
 							}
 							else if (nextstate == 2)
 							{
 								if (state == 3)
-									nextstate = 1;
+								{
+									str.Insert(0, '*');
+									state = 2;
+									nextstate = 0;
+								}
 								else
 									nextstate = 0;
 							}
 							else if (nextstate == 3)
 							{
-								nextstate = 1;
+								if (state == 2)
+									nextstate = 0;
+								else
+									nextstate = 1;
 							}
 							else
-							{
+							{ 
 								throw new NotImplementedException();
 							}
 						}
@@ -143,6 +207,7 @@ namespace MarkdownWikier
 				prev = c;
 			}
 			richTextBox1.AppendText(new string(str.ToArray()));
+
 			//richTextBox1.Lines = lines.ToArray();
 		}
 
@@ -169,7 +234,9 @@ namespace MarkdownWikier
 			this.Invoke((MethodInvoker) delegate
 			{
 				tabsPages.SelectedTab = tabsPages.Controls.Cast<TabPage>().Where(t => file == t.Tag as MDFile).FirstOrDefault();
+				textBox_raw.TextChanged -= textBox_raw_TextChanged;
 				textBox_raw.Lines = file.Lines;
+				textBox_raw.TextChanged += textBox_raw_TextChanged;
 			});
 		}
 
@@ -209,7 +276,7 @@ namespace MarkdownWikier
 			// subscribe to file changes?
 			if (md == null)
 			{
-				if (!current.Changed && current.file == null)
+				if (current != null && !current.Changed && current.file == null)
 					md = current;
 				else
 				{
@@ -241,6 +308,13 @@ namespace MarkdownWikier
 			files.Add(current);
 			tabPage1.Tag = current;
 			DisplayFile(current);
+			if (openFiles != null)
+			{
+				foreach (var f in openFiles)
+				{
+					LoadFile(f);
+				}
+			}
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)

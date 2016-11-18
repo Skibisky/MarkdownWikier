@@ -63,17 +63,17 @@ namespace MarkdownWikier
 
 		public void Load(string path)
 		{
-			file = path;
+			file = new FileInfo(path).FullName;
 			name = new FileInfo(file).Name;
 			lines = File.ReadAllLines(file);
 			changed = false;
 			watcher.Path = Path.GetDirectoryName(file);
 			watcher.Filter = Path.GetFileName(file);
 			watcher.EnableRaisingEvents = true;
-			if (onLoad != null)
-				onLoad(this, new EventArgs());
 			if (onEdit != null)
 				onEdit(this, new EventArgs());
+			if (onLoad != null)
+				onLoad(this, new EventArgs());
 		}
 
 		public void Save()

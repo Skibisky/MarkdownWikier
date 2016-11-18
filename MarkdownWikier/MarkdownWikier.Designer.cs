@@ -44,7 +44,7 @@
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.splitContainer_treeTabs = new System.Windows.Forms.SplitContainer();
 			this.treeView_files = new System.Windows.Forms.TreeView();
-			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+			this.richTextBox1 = new RichTextBoxEx();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -271,7 +271,7 @@
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-		private System.Windows.Forms.RichTextBox richTextBox1;
+		private RichTextBoxEx richTextBox1;
 	}
 }
 
