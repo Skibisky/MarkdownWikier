@@ -90,6 +90,7 @@
 			this.textBox_raw.Location = new System.Drawing.Point(0, 0);
 			this.textBox_raw.Multiline = true;
 			this.textBox_raw.Name = "textBox_raw";
+			this.textBox_raw.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textBox_raw.Size = new System.Drawing.Size(498, 634);
 			this.textBox_raw.TabIndex = 0;
 			this.textBox_raw.TextChanged += new System.EventHandler(this.textBox_raw_TextChanged);

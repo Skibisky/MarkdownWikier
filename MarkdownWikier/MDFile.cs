@@ -6,10 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace MarkdownWikier
-{
-	public class MDFile
-	{
+namespace MarkdownWikier {
+	public class MDFile {
 		public string file = null;
 		public string name = null;
 
@@ -18,14 +16,11 @@ namespace MarkdownWikier
 		public EventHandler<EventArgs> onSave = null;
 		public EventHandler<EventArgs> onLoad = null;
 
-		public string[] Lines
-		{
-			get
-			{
+		public string[] Lines {
+			get {
 				return lines;
 			}
-			set
-			{
+			set {
 				changed = true;
 				lines = value;
 				if (onEdit != null)
@@ -33,10 +28,8 @@ namespace MarkdownWikier
 			}
 		}
 
-		public bool Changed
-		{
-			get
-			{
+		public bool Changed {
+			get {
 				return changed;
 			}
 		}
@@ -48,8 +41,7 @@ namespace MarkdownWikier
 		private Timer reload;
 
 
-		public MDFile(EventHandler<EventArgs> change, EventHandler<EventArgs> edit, EventHandler<EventArgs> save, EventHandler<EventArgs> load)
-		{
+		public MDFile(EventHandler<EventArgs> change, EventHandler<EventArgs> edit, EventHandler<EventArgs> save, EventHandler<EventArgs> load) {
 			watcher = new FileSystemWatcher();
 			watcher.Changed += OnChange;
 			watcher.NotifyFilter = NotifyFilters.LastWrite;
@@ -61,8 +53,7 @@ namespace MarkdownWikier
 			onLoad = load;
 		}
 
-		public void Load(string path)
-		{
+		public void Load(string path) {
 			file = new FileInfo(path).FullName;
 			name = new FileInfo(file).Name;
 			lines = File.ReadAllLines(file);
@@ -76,8 +67,7 @@ namespace MarkdownWikier
 				onLoad(this, new EventArgs());
 		}
 
-		public void Save()
-		{
+		public void Save() {
 			if (file == null)
 				return;
 
@@ -90,16 +80,14 @@ namespace MarkdownWikier
 		}
 
 
-		private void onTimer(object sender, ElapsedEventArgs e)
-		{
+		private void onTimer(object sender, ElapsedEventArgs e) {
 			reload.Stop();
 			lines = File.ReadAllLines(file);
 			if (onChange != null)
 				onChange(this, new EventArgs());
 		}
 
-		public void OnChange(object sender, FileSystemEventArgs e)
-		{
+		public void OnChange(object sender, FileSystemEventArgs e) {
 			// consider prompting?
 			// check if current?
 			reload.Start();

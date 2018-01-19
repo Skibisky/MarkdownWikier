@@ -4,14 +4,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
-namespace MarkdownWikier
-{
-	public class RichTextBoxEx : RichTextBox
-	{
+namespace MarkdownWikier {
+	public class RichTextBoxEx : RichTextBox {
 		#region Interop-Defines
 		[StructLayout(LayoutKind.Sequential)]
-		private struct CHARFORMAT2_STRUCT
-		{
+		private struct CHARFORMAT2_STRUCT {
 			public UInt32 cbSize;
 			public UInt32 dwMask;
 			public UInt32 dwEffects;
@@ -108,16 +105,14 @@ namespace MarkdownWikier
 
 		#endregion
 
-		public RichTextBoxEx()
-		{
+		public RichTextBoxEx() {
 			// Otherwise, non-standard links get lost when user starts typing
 			// next to a non-standard link
 			this.DetectUrls = false;
 		}
 
 		[DefaultValue(false)]
-		public new bool DetectUrls
-		{
+		public new bool DetectUrls {
 			get { return base.DetectUrls; }
 			set { base.DetectUrls = value; }
 		}
@@ -126,8 +121,7 @@ namespace MarkdownWikier
 		/// Insert a given text as a link into the RichTextBox at the current insert position.
 		/// </summary>
 		/// <param name="text">Text to be inserted</param>
-		public void InsertLink(string text)
-		{
+		public void InsertLink(string text) {
 			InsertLink(text, this.SelectionStart);
 		}
 
@@ -136,8 +130,7 @@ namespace MarkdownWikier
 		/// </summary>
 		/// <param name="text">Text to be inserted</param>
 		/// <param name="position">Insert position</param>
-		public void InsertLink(string text, int position)
-		{
+		public void InsertLink(string text, int position) {
 			if (position < 0 || position > this.Text.Length)
 				throw new ArgumentOutOfRangeException("position");
 
@@ -157,8 +150,7 @@ namespace MarkdownWikier
 		/// </summary>
 		/// <param name="text">Text to be inserted</param>
 		/// <param name="hyperlink">Invisible hyperlink string to be inserted</param>
-		public void InsertLink(string text, string hyperlink)
-		{
+		public void InsertLink(string text, string hyperlink) {
 			InsertLink(text, hyperlink, this.SelectionStart);
 		}
 
@@ -171,8 +163,7 @@ namespace MarkdownWikier
 		/// <param name="text">Text to be inserted</param>
 		/// <param name="hyperlink">Invisible hyperlink string to be inserted</param>
 		/// <param name="position">Insert position</param>
-		public void InsertLink(string text, string hyperlink, int position)
-		{
+		public void InsertLink(string text, string hyperlink, int position) {
 			if (position < 0 || position > this.Text.Length)
 				throw new ArgumentOutOfRangeException("position");
 
@@ -187,22 +178,19 @@ namespace MarkdownWikier
 		/// Set the current selection's link style
 		/// </summary>
 		/// <param name="link">true: set link style, false: clear link style</param>
-		public void SetSelectionLink(bool link)
-		{
+		public void SetSelectionLink(bool link) {
 			SetSelectionStyle(CFM_LINK, link ? CFE_LINK : 0);
 		}
 		/// <summary>
 		/// Get the link style for the current selection
 		/// </summary>
 		/// <returns>0: link style not set, 1: link style set, -1: mixed</returns>
-		public int GetSelectionLink()
-		{
+		public int GetSelectionLink() {
 			return GetSelectionStyle(CFM_LINK, CFE_LINK);
 		}
 
 
-		private void SetSelectionStyle(UInt32 mask, UInt32 effect)
-		{
+		private void SetSelectionStyle(UInt32 mask, UInt32 effect) {
 			CHARFORMAT2_STRUCT cf = new CHARFORMAT2_STRUCT();
 			cf.cbSize = (UInt32)Marshal.SizeOf(cf);
 			cf.dwMask = mask;
@@ -217,8 +205,7 @@ namespace MarkdownWikier
 			Marshal.FreeCoTaskMem(lpar);
 		}
 
-		private int GetSelectionStyle(UInt32 mask, UInt32 effect)
-		{
+		private int GetSelectionStyle(UInt32 mask, UInt32 effect) {
 			CHARFORMAT2_STRUCT cf = new CHARFORMAT2_STRUCT();
 			cf.cbSize = (UInt32)Marshal.SizeOf(cf);
 			cf.szFaceName = new char[32];
@@ -233,15 +220,13 @@ namespace MarkdownWikier
 
 			int state;
 			// dwMask holds the information which properties are consistent throughout the selection:
-			if ((cf.dwMask & mask) == mask)
-			{
+			if ((cf.dwMask & mask) == mask) {
 				if ((cf.dwEffects & effect) == effect)
 					state = 1;
 				else
 					state = 0;
 			}
-			else
-			{
+			else {
 				state = -1;
 			}
 
